@@ -1,0 +1,30 @@
+qualifying <- read.csv("/Users/hubert/Downloads/f1db_csv/qualifying.csv")
+results <- read.csv("/Users/hubert/Downloads/f1db_csv/results.csv")
+
+qualifying_df <- as.data.frame(qualifying)
+results_df <- as.data.frame(results)
+#print(qualifying_df)
+
+# Rename "position" to "qualifying_position" because conflicting column position names in races df and quali df
+# This is because the position in quali is different than position in race (race position 1 = win, race position 1 = person who finish first in quali)
+# Same for race
+colnames(qualifying_df)[colnames(qualifying_df) == "position"] ="qualifying_final_position"
+colnames(results_df)[colnames(results_df) == "position"] ="race_final_position"
+
+#print(qualifying_df)
+
+merged_df <- merge(qualifying_df, results_df, by.qualifying_df = "raceld", by.results_df = "raceld")
+print(colnames(merged_df))
+#print(merged_df)
+
+#Since we only care about the effect of whether racers who get into q3 on the results in the race, we drop all rows where racers dont get into q3 (q3 != "\\N")
+filtered_data <- subset(merged_df, q3 != "\\N")
+#print(filtered_data)
+
+#for your information
+#Each Grand Prix winner tallied 8 points from 1950 to 1960, 9 from 1961 to 1990, 10 between 1991 and 2009, and 25 since 2010.
+#so points might be all over the place, but we just care about if race_final_position = 1, that means they won the race
+# rest of data is there, just does not render
+
+selected_data <- subset(filtered_data, select = c(qualifying_final_position,race_final_position, points, driverId, q3, raceId, number, rank, time, fastestLapTime, laps))
+print(selected_data)
